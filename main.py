@@ -45,12 +45,12 @@ for i in range(int(film_number)):
 
 
 def create_map(dct):
-    print(dct, len(dct))
+    # print(dct, len(dct))
     f_map = folium.Map()
     fg = folium.FeatureGroup(name="Film Markers")
     for loc, film in dct.items():
         if loc != "None":
-            add_marker(fg, eval(loc), "<p>"+"| ".join(film)+"<\p>")
+            add_marker(fg, eval(loc), ("<br> ".join(list(set(film)))).replace("'","`"))
     fg.add_to(f_map)
 
     fg = folium.FeatureGroup(name="Eropean Union Countries")
