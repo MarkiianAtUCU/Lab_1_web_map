@@ -29,7 +29,7 @@ def read_file(path, year):
     [name, loc]
     """
     res = []
-    with open(path, "r") as file:
+    with open(path, "r",encoding="iso8859") as file:
         for i in range(14):
             file.readline()
         for i in file:
