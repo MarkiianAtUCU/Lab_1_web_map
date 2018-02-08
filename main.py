@@ -3,6 +3,7 @@ import random
 import countries
 import film_parser
 import geoloc
+import os
 
 def add_marker(group, coords, name):
     """
@@ -32,29 +33,23 @@ def add_countries(group, countries_list):
         ).add_to(group)
 
 
-year = input("Enter year of filming: ")
-films = film_parser.read_file("locations.list", year)
-print("[STATUS] Succesfully parsed file")
-print("        ", len(films), "films was found")
-film_number = input("Due to API limitation enter number of markers on map: ")
+def get_geo():
+    dct = {}
+    for i in range(int(film_number)):
+        element = random.choice(films)
+        loc = geoloc.get_geo_position(element[1])
+        if str(loc) in dct.keys():
+            dct[str(loc)] = dct[str(loc)] + [element[0]]
+        else:
+            dct[str(loc)] = [element[0]]
+        status = "Done" if loc else "Error"
+        print("[" + str(i + 1) + "/" + str(film_number) + "] - " + status)
+    return dct
 
 
-print("[STATUS] Searching for geolocation")
-
-dct = {}
-for i in range(int(film_number)):
-    element = random.choice(films)
-    loc = geoloc.get_geo_position(element[1])
-    if str(loc) in dct.keys():
-        dct[str(loc)] = dct[str(loc)] + [element[0]]
-    else:
-        dct[str(loc)] = [element[0]]
-    status = "Done" if loc else "Error"
-    print("[" + str(i + 1) + "/" + str(film_number) + "] - " + status)
 
 
 def create_map(dct):
-    # print(dct, len(dct))
     f_map = folium.Map()
     fg = folium.FeatureGroup(name="Film Markers")
     for loc, film in dct.items():
@@ -73,7 +68,17 @@ def create_map(dct):
 
     folium.LayerControl().add_to(f_map)
     f_map.save('Map_2.html')
-    print("Done!")
 
 
-create_map(dct)
+
+year = input("Enter year of filming: ")
+films = film_parser.read_file("locations.list", year)
+print("[STATUS] Succesfully parsed file")
+print("        ", len(films), "films was found")
+film_number = input("Due to API limitation enter number of markers on map: ")
+print("[STATUS] Searching for geolocation")
+geo=get_geo()
+print("[STATUS] Writing map")
+create_map(geo)
+print("[STATUS] Done!")
+os.system("Map_2.html")
