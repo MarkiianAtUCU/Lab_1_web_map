@@ -1,13 +1,14 @@
 import geocoder
 from geopy.geocoders import Nominatim
-
+from geopy import ArcGIS
+import re
 
 def get_name(year, line):
     return line[:line.find("(" + year)].strip().strip('"')
 
 
 def get_filming_place(line, year_pos):
-    bracket_pos = line.find("}")
+    bracket_pos = line.find("{")
     if bracket_pos != -1:
         place = line[bracket_pos + 1:].strip()
     else:
@@ -25,19 +26,26 @@ def get_geo_position_geolocator(loc):
     return (location.latitude, location.longitude)
 
 
+def get_geo_position_ArcGIS(loc):
+    locator = ArcGIS(timeout=10)
+    place = locator.geocode(loc)
+    return (place.latitude, place.longitude)
+
+
 def get_geo_position_google(loc):
     g = geocoder.google(loc, key="AIzaSyDgqFxZfFvhh8ponaUqskqn2bWwn9B7lM8")
     return g.latlng
 
 
 def get_geo_position(loc):
-    try:
-        res = get_geo_position_geolocator(loc)
-    except:
-        res = get_geo_position_google(loc)
-    if res == None:
-        res = get_geo_position_google(loc)
-    return res
+    # try:
+    #     res = get_geo_position_geolocator(loc)
+    # except:
+    #     res = get_geo_position_google(loc)
+    # if res == None:
+    #     res = get_geo_position_google(loc)
+    # return res
+    return get_geo_position_ArcGIS(loc)
 
 
 def read_file(path, year):
@@ -51,10 +59,14 @@ def read_file(path, year):
         for i in range(14):
             file.readline()
         for i in file:
-            position = i.find("(")
-            if i[position + 1:position + 5] == year:
-                name = get_name(year, i)
-                place = get_filming_place(i, position)
-                res.append((name, place))
+            position = [m.start() for m in re.finditer("\(", i)]
+            for pos in position :
+                if i[pos+1:pos+5].isdigit():
+                    if i[pos + 1:pos + 5] == year:
+                        name = get_name(year, i)
+                        place = get_filming_place(i, pos)
+                        res.append((name, place))
+                    break
+
 
     return res

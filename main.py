@@ -6,6 +6,11 @@ import film_parser
 
 
 def add_marker(group, coords, name):
+    """
+    (FeatureGroup, [latitude, longitude], str) -> None
+
+    Function adds folium marker to folium.FeatureGroup() or folium.Map()
+    """
     color = ('#%06X' % random.randint(0, 256**3 - 1))
     folium.Marker(
         location=coords,
@@ -15,6 +20,11 @@ def add_marker(group, coords, name):
 
 
 def add_countries(group, countries_list):
+    """
+    (FeatureGroup, [latitude, longitude], str) -> None
+
+    Function adds folium marker to folium.FeatureGroup() or folium.Map()
+    """    
     def style(x):
         return {'fillColor': ('#%06X' % random.randint(0, 256**3 - 1))}
     for element in countries_list:
