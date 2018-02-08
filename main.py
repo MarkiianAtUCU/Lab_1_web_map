@@ -1,9 +1,8 @@
 import folium
 import random
-from geopy.geocoders import Nominatim
 import countries
 import film_parser
-
+import geoloc
 
 def add_marker(group, coords, name):
     """
@@ -24,7 +23,7 @@ def add_countries(group, countries_list):
     (FeatureGroup, [latitude, longitude], str) -> None
 
     Function adds folium marker to folium.FeatureGroup() or folium.Map()
-    """    
+    """
     def style(x):
         return {'fillColor': ('#%06X' % random.randint(0, 256**3 - 1))}
     for element in countries_list:
@@ -45,7 +44,7 @@ print("[STATUS] Searching for geolocation")
 dct = {}
 for i in range(int(film_number)):
     element = random.choice(films)
-    loc = film_parser.get_geo_position(element[1])
+    loc = geoloc.get_geo_position(element[1])
     if str(loc) in dct.keys():
         dct[str(loc)] = dct[str(loc)] + [element[0]]
     else:
@@ -60,7 +59,8 @@ def create_map(dct):
     fg = folium.FeatureGroup(name="Film Markers")
     for loc, film in dct.items():
         if loc != "None":
-            add_marker(fg, eval(loc), ("<br> ".join(list(set(film)))).replace("'","`"))
+            add_marker(fg, eval(loc), ("<br> ".join(
+                list(set(film)))).replace("'", "`"))
     fg.add_to(f_map)
 
     fg = folium.FeatureGroup(name="Eropean Union Countries")
