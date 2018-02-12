@@ -1,45 +1,34 @@
-
 import re
 
 
-def get_name(year, line):
-    return line[:line.find("(" + year)].strip().strip('"')
+def nyl_split(st):
+    """
+    (str) -> str, str, str
 
-
-def get_filming_place(line, year_pos):
-    bracket_pos = line.find("{")
-    if bracket_pos != -1:
-        place = line[bracket_pos + 1:].strip()
-    else:
-        place = line[line.find(")") + 1:].strip()
-
-    if place[-1] == ")":
-        r_line = place[::-1]
-        place = r_line[r_line.find("(") + 1:][::-1].strip()
-    return place
-
-
-
+    Function returns splitted line: name, year of filming and location
+    """
+    splitted = st.split("\t")
+    year = "(????" if ("(????") in splitted[0] else re.findall(
+        "\([1-3][0-9]{3}", splitted[0])[-1]
+    name = splitted[0][:splitted[0].rfind(year)].strip().strip('"')
+    location = splitted[-1] if "(" not in splitted[-1] else splitted[-2]
+    return name, year, location
 
 
 def read_file(path, year):
     """
-    (str) -> (list)
-    Return list of lines from file (path to file)
-    [name, loc]
+    (str, str) -> (list of tuples (str, str))
+
+    Return list of tuples with name of film and adress of filming
     """
     res = []
-    with open(path, "r",encoding="iso8859") as file:
+    with open(path, "r", encoding="iso8859") as file:
         for i in range(14):
             file.readline()
         for i in file:
-            position = [m.start() for m in re.finditer("\(", i)]
-            for pos in position:
-                if i[pos + 1:pos + 5].isdigit():
-                    if i[pos + 1:pos + 5] == year:
-                        name = get_name(year, i)
-                        place = get_filming_place(i, pos)
+            if "-------------" not in i:
+                if "("+year in i:
+                    name, f_year, place = nyl_split(i)
+                    if f_year == "(" + year:
                         res.append((name, place))
-                    break
-
     return res
