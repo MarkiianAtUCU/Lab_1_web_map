@@ -1,5 +1,5 @@
 # Web map project (Lab 1)
-There is a github page of my second lab in university. Program can show places of filming. 
+There is a GitHub page of my second lab. The task was to create the program that can show places of making films on the certain year. The result is saved in Map.htm file. (geopy, geocoder, folium) modules were used and needs to be installed
 <br>
 <br>
 # Run main.py to use program
