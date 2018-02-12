@@ -114,7 +114,7 @@ def create_map(dct):
     fg.add_to(f_map)
 
     folium.LayerControl().add_to(f_map)
-    f_map.save('Map_2.html')
+    f_map.save('Map.html')
 
 
 year = get_year("Enter year of filming: ")
@@ -134,4 +134,4 @@ print("[STATUS] Writing map")
 create_map(geo)
 print("[STATUS] Done!")
 
-os.system("Map_2.html")
+os.system("Map.html")
